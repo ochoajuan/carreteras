@@ -1,0 +1,71 @@
+﻿@page "/Categoriaform"
+@page "/Categoriaform/{Id:int}"
+
+@using carreteras.Shared;
+@using System.Net.Http;
+@using System.Net.Http.Json;
+@inject HttpClient Http;
+@inject NavigationManager NavigationManager;
+
+<h3>Categoriaform</h3>
+
+<EditForm Model="@oCat">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="form-group row mb-1">
+                <label class="col-sm-3">id</label>
+                <div class="col-sm-9">
+                    <InputNumber class="form-control" @bind-Value="oCat.Id"></InputNumber>
+                </div>
+            </div>
+            <div class="form-group row mb-1">
+                <label class="col-sm-3">Nombre categoria</label>
+                <div class="col-sm-9">
+                    <InputText class="form-control" @bind-Value="oCat.NombreCategoria"></InputText>
+                </div>
+            </div>
+            <div class="form-group row mb-1">
+                <div class="col-sm-12">
+                    <button class="btn btn-primary" @onclick="Save">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    carreteras.Shared.Categoria oCat = new carreteras.Shared.Categoria();
+    public string Url = "/api/Categoria";
+    Respuesta<object> oResp = new Respuesta<object>();
+    Respuesta<carreteras.Shared.Categoria> oRespCat = new Respuesta<carreteras.Shared.Categoria>();
+
+    private async Task Save()
+    {
+        if(Id != 0)
+        {
+            var response = await Http.PutAsJsonAsync<carreteras.Shared.Categoria>(Url, oCat);
+            oResp = response.Content.ReadFromJsonAsync<Respuesta<object>>().Result;
+        }
+        else
+        {
+            var response = await Http.PostAsJsonAsync<carreteras.Shared.Categoria>(Url, oCat);
+            oResp = response.Content.ReadFromJsonAsync<Respuesta<object>>().Result;
+        }
+        NavigationManager.NavigateTo("/Categorias");
+
+
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if(Id != 0)
+        {
+            oRespCat = await Http.GetFromJsonAsync<Respuesta<carreteras.Shared.Categoria>>(Url + "/" + Id);
+            oCat = oRespCat.Data;
+        }
+
+    }
+    }

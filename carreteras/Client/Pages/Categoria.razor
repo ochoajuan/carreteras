@@ -1,0 +1,45 @@
+﻿@page "/categorias"
+
+@using carreteras.Shared;
+@using System.Net.Http;
+@inject HttpClient Http;
+
+
+<h3>Categoria</h3>
+
+<div class="row ">
+    <div class="col-12" text-right>
+        <a href="Categoriaform">Nuevo</a>
+    </div>
+
+</div>
+
+<table class="table">
+    @if (oResp != null && oResp.Data != null) { 
+
+    <tr>
+        <td>Id</td>
+        <td>Nombre Categoria</td>
+        <td>Acciones</td>
+    </tr>
+        @foreach (var oE in oResp.Data)
+            {
+                <tr>
+                    <td>@oE.Id</td>
+                    <td>@oE.NombreCategoria</td>
+                    <td>
+                        <a href="/Categoriaform/@oE.Id">Editar</a>
+                        <a href="/EliminarCategoria/@oE.Id">Eliminar</a>
+                    </td>
+                </tr>
+            }
+    }
+</table>
+
+@code {
+    public string Url = "/api/Categoria";
+    public Respuesta<List<carreteras.Shared.Categoria>> oResp = new Respuesta<List<carreteras.Shared.Categoria>>();
+
+    protected override async Task OnInitializedAsync() => 
+        oResp = await Http.GetFromJsonAsync<Respuesta<List<carreteras.Shared.Categoria>>>(Url);
+}

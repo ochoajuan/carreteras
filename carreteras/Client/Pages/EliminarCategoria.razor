@@ -1,0 +1,35 @@
+﻿@page "/EliminarCategoria/{Id:int}"
+
+@using carreteras.Shared;
+@using System.Net.Http;
+@using System.Net.Http.Json;
+@inject HttpClient Http;
+@inject NavigationManager NavigationManager;
+
+<h3>EliminarCategoria</h3>
+
+<p>Deseas eliminar el Id @Id?</p>
+
+<div>
+    <button @onclick="Cancelar">Cancelar</button>
+    <button @onclick="Eliminar">Eliminar</button>
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    public string Url = "/api/Categoria";
+    Respuesta<object> oResp = new Respuesta<object>();
+
+    private void Cancelar () => NavigationManager.NavigateTo("/Categorias");
+
+    private async Task Eliminar()
+    {
+        var response = await Http.DeleteAsync(Url+"/"+Id);
+        oResp = response.Content.ReadFromJsonAsync<Respuesta<object>>().Result;
+        NavigationManager.NavigateTo("/Categorias");
+
+
+    }
+}
